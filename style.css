@@ -1,0 +1,58 @@
+body, html {
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent any scrolling */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000; /* Dark background for space theme */
+}
+
+#welcomeScreen {
+    position: fixed; /* Ensure it covers the entire viewport without moving */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: url('startscreen.png') no-repeat center center fixed; 
+    background-size: cover; /* Cover the entire area of the div */
+}
+
+canvas {
+    display: none; /* Hidden initially, shown after game starts */
+    width: 800px;
+    height: 600px;
+    background: #111; /* Dark background for the game canvas */
+    position: absolute; /* Positioned absolutely to overlap the welcome screen when shown */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the canvas on the screen */
+}
+
+#playerName {
+    margin: 20px;
+    padding: 10px;
+    font-size: 16px;
+    width: 250px; /* Set a specific width for the input field */
+    text-align: center; /* Center text inside the input box */
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007BFF; /* Example button color, change as desired */
+    color: white; /* Text color for the button */
+    border: none;
+    border-radius: 5px; /* Rounded corners for the button */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}

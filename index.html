@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DragonBall Z Invader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="welcomeScreen">
+        <h1>Welcome to DragonBall Z Invader</h1>
+        <input type="text" id="playerName" placeholder="Enter your name">
+        <button onclick="startGame()">Start</button>
+    </div>
+    <canvas id="gameCanvas" style="display: none;"></canvas>
+    <audio id="welcomeMusic" src="dbz1.mp3" loop></audio>
+    <script src="util.js"></script>
+    <script src="player.js"></script>
+    <script src="bullet.js"></script>
+    <script src="enemy.js"></script>
+    <script src="healthkit.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
