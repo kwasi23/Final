@@ -1,30 +1,34 @@
-// Get the canvas element and its 2D rendering context
+// Get the canvas element by its id 'gameCanvas'
 const canvas = document.getElementById('gameCanvas');
+
+// Get the 2D rendering context of the canvas
 const ctx = canvas.getContext('2d');
-// Set canvas dimensions
+
+// Set the width and height of the canvas
 canvas.width = 800;
 canvas.height = 600;
 
-// Define variables to manage game state
+// Declare variables for game components and state
 let player, bullets, enemies, healthkits, gameOver, score, health, animationId, enemySpawnInterval, healthkitSpawnInterval;
-let playerName = ''; // Store player name
-const shootSound = new Audio('shoot.mp3'); // Sound effect for shooting
 
-// Event listener to play welcome music when welcome screen is clicked
+// Store player name
+let playerName = '';
+
+// Create an Audio object for shooting sound effect
+const shootSound = new Audio('shoot.mp3');
+
+// Event listener for when the DOM content is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    const welcomeMusic = document.getElementById('welcomeMusic');
-    document.getElementById('welcomeScreen').addEventListener('click', function() {
-        welcomeMusic.play();
-    });
+    fetchNews(); // Fetch news when document is ready
 });
 
-// Initialization function
+// Function to initialize game components
 function init() {
-    // Clear previous spawn intervals
+    // Clear any existing enemy and health kit spawn intervals
     if (enemySpawnInterval) clearInterval(enemySpawnInterval);
     if (healthkitSpawnInterval) clearInterval(healthkitSpawnInterval);
 
-    // Initialize game state variables
+    // Initialize player and game state
     player = new Player(ctx, canvas.width / 2, canvas.height - 30);
     bullets = [];
     enemies = [];
@@ -33,14 +37,19 @@ function init() {
     score = 0;
     health = 100;
 
+    // Start playing the welcome music
+    const welcomeMusic = document.getElementById('welcomeMusic');
+    welcomeMusic.play();
+
     // Start spawning enemies and health kits
     spawnEnemies();
     spawnHealthkits();
-    // Start game loop
+
+    // Start the game loop
     animationId = requestAnimationFrame(gameLoop);
 }
 
-// Function to spawn enemies periodically
+// Function to spawn enemies at regular intervals
 function spawnEnemies() {
     enemySpawnInterval = setInterval(() => {
         if (!gameOver) {
@@ -49,7 +58,7 @@ function spawnEnemies() {
     }, 2000);
 }
 
-// Function to spawn health kits periodically
+// Function to spawn health kits at regular intervals
 function spawnHealthkits() {
     healthkitSpawnInterval = setInterval(() => {
         if (!gameOver) {
@@ -58,12 +67,12 @@ function spawnHealthkits() {
     }, 15000);
 }
 
-// Game loop function
+// Main game loop
 function gameLoop() {
-    // Clear canvas
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background image
+    // Draw background image if available
     const backgroundImage = getImage('background');
     if (backgroundImage) {
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
@@ -73,30 +82,28 @@ function gameLoop() {
     player.draw();
     bullets.forEach(bullet => {
         if (!bullet.update()) {
-            const index = bullets.indexOf(bullet);
-            bullets.splice(index, 1);
+            bullets.splice(bullets.indexOf(bullet), 1);
         }
     });
     enemies.forEach(enemy => {
         if (!enemy.update()) {
             gameOver = true;
             displayRestart();
-            return;
         }
     });
     healthkits.forEach(healthkit => {
         if (!healthkit.update()) {
-            const index = healthkits.indexOf(healthkit);
-            healthkits.splice(index, 1);
+            healthkits.splice(healthkits.indexOf(healthkit), 1);
         }
     });
 
-    // Check collisions
+    // Check for collisions between game objects
     checkCollisions();
-    // Draw HUD
+
+    // Draw the HUD (Heads-Up Display)
     drawHUD();
 
-    // Continue game loop if game is not over
+    // Continue the game loop if game is not over
     if (!gameOver) {
         requestAnimationFrame(gameLoop);
     }
@@ -129,7 +136,7 @@ function checkCollisions() {
     });
 }
 
-// Function to display game over message and restart option
+// Function to display restart options on game over
 function displayRestart() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -141,7 +148,7 @@ function displayRestart() {
     cancelAnimationFrame(animationId);
 }
 
-// Function to draw HUD (Heads-Up Display) showing score, health, and player name
+// Function to draw the Heads-Up Display (HUD)
 function drawHUD() {
     ctx.fillStyle = 'white';
     ctx.font = '16px Arial';
@@ -154,58 +161,43 @@ function drawHUD() {
     ctx.fillText(`Player: ${playerName}`, canvas.width - 10, 20);
 }
 
-// Function to fade out music
-function fadeOutMusic(audioElement, duration) {
-    const originalVolume = audioElement.volume;
-    const fadeOutInterval = 1200; // milliseconds
-    const fadeStep = originalVolume / (duration / fadeOutInterval);
-
-    const fadeInterval = setInterval(function() {
-        const newVolume = audioElement.volume - fadeStep;
-        if (newVolume > 0) {
-            audioElement.volume = newVolume;
-        } else {
-            audioElement.volume = 0; // Make sure volume does not go negative
-            audioElement.pause(); // Optionally stop the music after fading out
-            audioElement.currentTime = 0; // Reset the time for future plays
-            clearInterval(fadeInterval); // Stop the interval
-        }
-    }, fadeOutInterval);
-}
-
 // Function to start the game
 function startGame() {
     // Get player name from input field
     playerName = document.getElementById('playerName').value.trim();
-    // If player name is empty, show alert and return
     if (!playerName) {
         alert('Please enter your name!');
         return;
     }
 
-    // Fade out welcome music
-    const welcomeMusic = document.getElementById('welcomeMusic');
-    fadeOutMusic(welcomeMusic, 2000); // Fade out over 2000 milliseconds (2 seconds)
+    // Hide the Spotify player if present
+    const spotifyPlayer = document.getElementById('spotifyPlayer');
+    if (spotifyPlayer) {
+        spotifyPlayer.style.display = 'none';
+    }
 
-    // Hide welcome screen and show game canvas
+    // Hide the welcome screen and show the game canvas
     document.getElementById('welcomeScreen').style.display = 'none';
     canvas.style.display = 'block';
+
     // Initialize the game
     init();
 }
 
-// Event listener to restart game when canvas is clicked
+// Event listener for canvas clicks
 canvas.addEventListener('click', function(event) {
+    // Restart the game if it's over, otherwise shoot bullets
     if (gameOver) {
-        init(); // Restart the game if it's over
+        init();
     } else {
         bullets.push(new Bullet(ctx, player.x, player.y - 20));
-        shootSound.play(); // Play shooting sound effect when a bullet is fired
+        shootSound.play();
     }
 });
 
-// Event listener to move player horizontally based on mouse movement
+// Event listener for mouse movements on the canvas
 canvas.addEventListener('mousemove', function(event) {
+    // Move the player horizontally based on mouse position
     if (!gameOver) {
         let rect = canvas.getBoundingClientRect();
         let mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
